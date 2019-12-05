@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Student extends Person {
 
 	ArrayList<Integer> certificates;
+	boolean enrolled;
 
 	Student(String name, char gender, Integer age){
 		super(name, gender, age);
@@ -11,6 +12,11 @@ public class Student extends Person {
 
 	void graduate(Subject subject){
 		certificates.add(subject.getID());
+		enrolled = false;
+	}
+
+	void dropCourse(){
+		enrolled = false;
 	}
 
 	ArrayList<Integer> getCertificates(){
@@ -21,4 +27,11 @@ public class Student extends Person {
 		return certificates.contains(subject.getID());
 	}
 
+	void enrol(){
+		enrolled = true;
+	}
+
+	boolean isEnrolled(){
+		return enrolled;
+	}
 }

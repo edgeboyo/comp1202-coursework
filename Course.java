@@ -7,12 +7,18 @@ public class Course {
 	Integer daysToRun;
 
 	ArrayList<Student> enrolled;
+	Instructor instructor;
+
+	boolean cancelled;
+	boolean finished;
 
 	Course(Subject subject, int toStart){
 		this.subject = subject;
 		this.daysUntilStarts = toStart;
 		daysToRun = subject.getDuration();
 		enrolled = new ArrayList<Student>();
+		cancelled = false;
+		finished = false;
 	}
 
 	Subject getSubject(){
@@ -30,15 +36,29 @@ public class Course {
 	void aDayPasses(){
 		if(!daysUntilStarts.equals(0)){
 			daysUntilStarts--;
+			if((!hasInstructor() || getSize() == 0) && daysUntilStarts.equals(0)){
+				if(hasInstructor())
+					instructor.unassignCourse();
+				for(Student student : enrolled){
+					student.dropCourse();
+				}
+				instructor = null;
+				enrolled = new ArrayList<Student>();
+				cancelled = true;
+			}
+			return;
 		}
-		else if(!daysToRun.equals(0)){
+		if(!daysToRun.equals(0)){
 			daysToRun--;
 		}
-		if(daysToRun.equals(0)){
+		if(daysToRun.equals(0) && !finished){
 			for(Student student : enrolled){
-				if(!student.hasCertificate(subject))
-					student.graduate(subject);
+				student.graduate(subject);
+
 			}
+			instructor.unassignCourse();
+			instructor = null;
+			finished = true;
 		}
 	}
 
@@ -47,6 +67,7 @@ public class Course {
 			return false;
 		}
 		enrolled.add(student);
+		student.enrol();
 		return true;
 	}
 
@@ -56,5 +77,23 @@ public class Course {
 
 	Student[] getStudents(){
 		return enrolled.toArray(new Student[enrolled.size()]);
+	}
+
+
+	boolean setInstructor(Instructor instructor){
+		if(instructor.canTeach(subject)){
+			this.instructor = instructor;
+			instructor.assignCourse(this);
+			return true;
+		}
+		return false;
+	}
+
+	boolean hasInstructor(){
+		return instructor == null ? false : true;
+	}
+
+	boolean isCancelled(){
+		return cancelled;
 	}
 }
