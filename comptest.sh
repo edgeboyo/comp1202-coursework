@@ -1,0 +1,3 @@
+javac *.java
+
+rm *.class
