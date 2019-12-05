@@ -6,6 +6,18 @@ public class Subject {
 	Integer duration;
 	String description;
 
+	Subject(Integer id, Integer specialism, Integer duration){
+		this.id = id;
+		this.specialism = specialism;
+		this.duration = duration;
+		this.description = new String("ERR: TO SET");
+	}
+
+	Subject(Integer id, Integer specialism, Integer duration, String desc){
+		this(id, specialism, duration);
+		this.setDescription(desc);
+	}
+
 	Integer getID(){
 		return id;
 	}
