@@ -34,4 +34,13 @@ public class Student extends Person {
 	boolean isEnrolled(){
 		return enrolled;
 	}
+
+	public String toString() {
+		String temp = super.toString();
+
+		temp += "\n Completed courses: " + certificates.size();
+		temp += "\n Currently in course: " + (enrolled ? "True" : "False") + "\n";
+
+		return temp;
+	}
 }

@@ -15,6 +15,7 @@ public class Course {
 	Course(Subject subject, int toStart){
 		this.subject = subject;
 		this.daysUntilStarts = toStart;
+		subject.assign();
 		daysToRun = subject.getDuration();
 		enrolled = new ArrayList<Student>();
 		cancelled = false;
@@ -45,6 +46,7 @@ public class Course {
 				instructor = null;
 				enrolled = new ArrayList<Student>();
 				cancelled = true;
+				subject.unassign();
 			}
 			return;
 		}
@@ -58,12 +60,13 @@ public class Course {
 			}
 			instructor.unassignCourse();
 			instructor = null;
+			subject.unassign();
 			finished = true;
 		}
 	}
 
 	boolean enrolStudent(Student student){
-		if(daysUntilStarts.equals(0) || enrolled.size() == 3){
+		if(daysUntilStarts.equals(0) || enrolled.size() == 3 || student.getCertificates().contains(subject.getID())){
 			return false;
 		}
 		enrolled.add(student);
@@ -95,5 +98,26 @@ public class Course {
 
 	boolean isCancelled(){
 		return cancelled;
+	}
+
+	boolean toBeRemoved(){
+		if(isCancelled() || getStatus() == 0){
+			return true;
+		}
+		return false;
+	}
+
+	public String toString(){
+		String temp = new String();
+
+		if(cancelled){
+			temp+="WARNING COURSE SHOULD BE CANCELLED!\n";
+		}
+
+		temp += " Course subject ID: " + subject.getID();
+		temp += "\n " + (getStatus() < 0 ? "Due to start" : "Finishes") + " in: " + Math.abs(getStatus());
+		temp += "\n " + (instructor == null ? "Instructor not assigned" : "Instructor: " + instructor.getName());
+		temp += "\n Amount of students enrolled: " + enrolled.size() + "\n";
+		return temp;
 	}
 }

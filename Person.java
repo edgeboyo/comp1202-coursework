@@ -26,4 +26,14 @@ public class Person {
 	int getAge(){
 		return age;
 	}
+
+	public String toString(){
+		String temp = new String();
+
+		temp += " Name: " + name;
+		temp += "\n Gender: " + gender;
+		temp += "\n Age: " + age + "\n";
+
+		return temp;
+	}
 }
