@@ -8,6 +8,7 @@ public class Student extends Person {
 	Student(String name, char gender, Integer age){
 		super(name, gender, age);
 		certificates = new ArrayList<Integer>();
+		enrolled = false;
 	}
 
 	Student(Person person){
@@ -52,5 +53,20 @@ public class Student extends Person {
 		temp += "\n Currently in course: " + (enrolled ? "True" : "False") + "\n";
 
 		return temp;
+	}
+
+	String toSave(){
+		String temp = "student:" + super.toSave() + ":";
+		temp += (enrolled ? "1" : "0") + ":";
+
+		for(Integer id : certificates){
+			temp += id + ",";
+		}
+
+		if(temp.endsWith(",")){
+		  temp = temp.substring(0,temp.length() - 1);
+		}
+
+		return temp + "\n";
 	}
 }

@@ -37,6 +37,7 @@ public class Course {
 	void aDayPasses(){
 		if(!daysUntilStarts.equals(0)){
 			daysUntilStarts--;
+			subject.unassign();
 			if((!hasInstructor() || getSize() == 0) && daysUntilStarts.equals(0)){
 				if(hasInstructor())
 					instructor.unassignCourse();
@@ -46,7 +47,6 @@ public class Course {
 				instructor = null;
 				enrolled = new ArrayList<Student>();
 				cancelled = true;
-				subject.unassign();
 			}
 			return;
 		}
@@ -60,7 +60,6 @@ public class Course {
 			}
 			instructor.unassignCourse();
 			instructor = null;
-			subject.unassign();
 			finished = true;
 		}
 	}
@@ -84,7 +83,7 @@ public class Course {
 
 
 	boolean setInstructor(Instructor instructor){
-		if(instructor.canTeach(subject)){
+		if(instructor.canTeach(subject) && instructor.getAssignedCourse() == null){
 			this.instructor = instructor;
 			instructor.assignCourse(this);
 			return true;
@@ -117,7 +116,36 @@ public class Course {
 		temp += " Course subject ID: " + subject.getID();
 		temp += "\n " + (getStatus() < 0 ? "Due to start" : "Finishes") + " in: " + Math.abs(getStatus());
 		temp += "\n " + (instructor == null ? "Instructor not assigned" : "Instructor: " + instructor.getName());
-		temp += "\n Amount of students enrolled: " + enrolled.size() + "\n";
+		temp += "\n Amount of students enrolled: " + enrolled.size() + "\n Enrolled list:\n";
+
+		for(Student student : enrolled){
+			temp+= "  * " + student.getName() + "\n";
+		}
 		return temp;
+	}
+
+	String toSave(School school){
+		String temp = new String();
+
+		temp += "course:";
+
+		temp += school.getSubjects().indexOf(subject) + "," + daysUntilStarts + "," + daysToRun + ",";
+
+		if(instructor == null)
+			temp += -1;
+		else
+			temp += school.getInstructors().indexOf(instructor);
+
+		temp+=":";
+
+		for(Student student : enrolled){
+			temp += school.getStudents().indexOf(student) + ",";
+		}
+
+		if(temp.endsWith(",")){
+		  temp = temp.substring(0,temp.length() - 1);
+		}
+
+		return temp + "\n";
 	}
 }

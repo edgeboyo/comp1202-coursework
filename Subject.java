@@ -69,4 +69,11 @@ public class Subject {
 
 		return temp;
 	}
+
+	String toSave(){
+		String temp = new String();
+
+		temp += "subject:" + description + "," + id + "," + specialism + "," + duration + "," + (assigned ? 1 : 0) + "\n";
+		return temp;
+	}
 }

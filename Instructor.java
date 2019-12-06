@@ -28,4 +28,28 @@ public abstract class Instructor extends Person {
 			temp += "\n Assigned course: " + assignedCourse.getSubject().getDescription() + "\n";
 		return temp;
 	}
+
+	String toSave(School school){
+		String temp = super.toSave();
+
+		temp+= ":" + (assignedCourse == null ? -1 : school.getCourses().indexOf(assignedCourse));
+
+		String type = new String();
+
+		if(this instanceof Teacher){
+			type = "Teacher:";
+		}
+		if(this instanceof Demonstrator){
+			type = "Demonstrator:";
+		}
+		if(this instanceof GUITrainer){
+			type = "GUITrainer:";
+		}
+		if(this instanceof OOTrainer){
+			type = "OOTrainer:";
+		}
+
+
+		return type + temp + "\n";
+	}
 }

@@ -37,4 +37,10 @@ public class Person {
 
 		return temp;
 	}
+
+	String toSave(){
+		String temp = new String();
+		temp += name + "," + gender + "," + age;
+		return temp;
+	}
 }

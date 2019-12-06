@@ -72,15 +72,17 @@ public class School {
 		return instructors;
 	}
 
+	/** @return */
+	String getName(){
+		return name;
+	}
+
+	/**
+	 * @return
+	 */
 	public String toString(){
 		String status = new String();
-		String divider = new String(" ************");
-		status += "-SUBJECTS\n";
-
-
-		for(Subject subject : subjects){
-			status += subject + divider + "\n";
-		}
+		String divider = new String("\n");
 
 
 		status += "\n-COURSES\n";
