@@ -38,7 +38,7 @@ public class Administrator {
 			school.add(new Student(design.createPerson(18, 29)));
 
 		}
-		else if (choice < 33){
+		else if (choice < 66){
 			studentsJoined++;
 			criticalInfo += "One student joined the school\n";
 			school.add(new Student(design.createPerson(18, 29)));
