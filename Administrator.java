@@ -2,16 +2,29 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.io.IOException;
 
+/** 
+ * Administrator class that controls the school
+ * It creates it based on argumnets and then manipulates
+ * according to specification
+ */
 public class Administrator {
-	static School school;
 	
+	//School class containing most of the created classes
+	static School school;
+
+	//log used for debugging
+	static boolean criticalDisplay;
 	static String criticalInfo;
+
+	//contains last day's status report
 	static String daysLog;
 
+	//utilities used to make the program run smoother
 	static Random random;
 	static int choice;
 	static FileIO fileInOut;
 
+	//variables used in the final and progress reports
 	static Integer elapsed;
 	static Integer studentsJoined;
 	static Integer graduates;
@@ -19,18 +32,37 @@ public class Administrator {
 	static Integer profsJoined;
 	static Integer profsLeft;
 
+	//variables used to control the output. Can be changed with flags
+	static boolean noInputFile;
+	static String saveName;
+	static String configName;
+	static Integer days;
+	static Integer waitTime;
+
+	/**
+	 * Rolls a rumber from 0 to 99 for luck checks
+	 */
 	static void reRoll(){
 		choice = random.nextInt(100);
 	}
 
+	/**
+	 * Function that runs the school and controls modification
+	 * Since it's one of the most complicated parts I'll go through it block by block
+	 */
 	static void run(){
+
+		//used to generate names
 		DesignEngine design = new DesignEngine();
 		criticalInfo = new String();
 
 		elapsed++;
 
+		/**
+		 * Roll and check if one new student (33%), if two students (33%) or no students (34%)
+		 * and add them to the school
+		 */
 		reRoll();
-
 		if (choice < 33){
 			studentsJoined+=2;
 			criticalInfo += "Two students joined the school\n";
@@ -44,6 +76,14 @@ public class Administrator {
 			school.add(new Student(design.createPerson(18, 29)));
 		}
 
+		/**
+		 * Roll for each type of Instructor and add to school.
+		 * The chances are:
+		 *  * Teacher 20%
+		 *  * Demonstrator 10%
+		 *  * GUITrainer 5%
+		 *  * OOTrainer 5%
+		 */
 		reRoll();
 		if (choice < 20){
 			profsJoined++;
@@ -72,11 +112,17 @@ public class Administrator {
 			school.add(new OOTrainer(design.createPerson(32, 50)));
 		}
 
+		//timestep once in the school
 		school.aDayInSchool();
 
 		ArrayList<Instructor> toRemove = new ArrayList<Instructor>();
 
 		for(Instructor instructor : school.getInstructors()){
+
+			/**
+			 * For every insturctpr check if he hasn't got a course and rolls correctly (20%)
+			 * If so remove instructor from the school
+			 */
 			reRoll();
 			if(instructor.getAssignedCourse() == null && choice < 20){
 				criticalInfo += "Instructor " + instructor.getName() + " left their job today\n";
@@ -85,6 +131,9 @@ public class Administrator {
 			}
 		}
 
+		/**
+		 * Remove items contained in the removal list
+		 */
 		for(Instructor exEmployee : toRemove){
 			school.remove(exEmployee);
 		}
@@ -92,6 +141,9 @@ public class Administrator {
 		ArrayList<Student> toDropOut = new ArrayList<Student>();
 
 		for(Student student : school.getStudents()){
+			/**
+			 * If student completed all courses mark as graduated and remove
+			 */
 			if(student.completedAll(school)){
 				criticalInfo += student.getName() + " completed all courses and left\n";
 				toDropOut.add(student);
@@ -99,26 +151,42 @@ public class Administrator {
 				continue;
 			}
 
+			/**
+			 * If currently not enrolled and roll is within 5%
+			 * Drop that student out of the school
+			 */
 			reRoll();
-			if(student.isEnrolled() && choice < 5){
+			if(!student.isEnrolled() && choice < 5){
 				criticalInfo += student.getName() + " dropped out\n";
 				dropOuts++;
 				toDropOut.add(student);
 			}
 		}
 
+		/**
+		 * Remove items contained in the removal list
+		 */
 		for(Student exStudent : toDropOut){
 			school.remove(exStudent);
 		}
 
-		daysLog = school.toString();
+		//message displayed each day
+		daysLog = "------DAY " + elapsed + "------" +school.toString();
 	}
 
+	/**
+	 * Function that runs the simulation a certain amount of time
+	 *  days : int - amount of days the simulation has to run
+	 *   if set to -1 will run indefinitely
+	 */
 	static void run(int days){
+
 		for(int i=0; i<days || (days == -1 ? true : false); i++){
+
 			try {
+
 				run();
-				Thread.sleep(0);
+				Thread.sleep(waitTime);
 			}
 			catch (InterruptedException e)
 			{
@@ -128,6 +196,9 @@ public class Administrator {
 
 			System.out.println(daysLog);
 
+			/**
+			 * Every tenth day back up to save file
+			 */
 			if( i % 10 == 0){
 				try{
 					fileInOut.buildSave(school);
@@ -138,7 +209,10 @@ public class Administrator {
 			}
 		}
 
-		System.out.println(school);
+		/**
+		 * After concluding the simulation
+		 * save to file
+		 */
 		try{
 			fileInOut.buildSave(school);
 		}
@@ -147,6 +221,9 @@ public class Administrator {
 		}
 	}
 
+	/**
+	 * End of the program report display
+	 */
 	static void report(){
 		System.out.println("*****************************************");
 		System.out.println("Days elapsed: " + elapsed);
@@ -158,7 +235,87 @@ public class Administrator {
 		System.out.println("*****************************************");
 	}
 
+	/**
+	 * Kills the program if the arguments are not known
+	 */
+	static void usageError(){
+		System.out.println("Incorrect usage! Refer to readme.txt");
+		System.exit(-3);
+	}
+
+	/**
+	 * Checks if the argument if [str] a flag or an argument.
+	 * Return true if flag, false if otherwise
+	 */
+	static boolean isFlag(String str){
+
+		if(str.length() < 1){
+			usageError();
+		}
+
+		if(str.charAt(0) == '-'){
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * Parses through argument array [args]
+	 * and modifies the program flags if necessary
+	 */
+	static void parseArgs(String[] args){
+		for(int i=0; i<args.length; i++){
+			if(isFlag(args[i])){
+				String arg = args[i];
+
+				//point to where the save file should be stored
+				if(arg.equals("-s")){
+					if(i+1==args.length || isFlag(args[i+1]))
+						usageError();
+					saveName = args[i+1];
+				}
+
+				//point to where the config file is
+				if(arg.equals("-c")){
+					if(i+1==args.length || isFlag(args[i+1]))
+						usageError();
+					configName = args[i+1];
+					noInputFile = false;
+				}
+
+				//tell how many days the simulatiom should take
+				if(arg.equals("-d")){
+					if(i+1==args.length || isFlag(args[i+1]))
+						usageError();
+					try{
+						days = Integer.parseInt(args[i+1]);
+					}
+					catch (Exception e){
+						usageError();
+					}
+				}
+
+				//tell how much time to wait between days
+				if(arg.equals("-w")){
+					if(i+1==args.length || isFlag(args[i+1]))
+						usageError();
+					try{
+						waitTime = Integer.parseInt(args[i+1]);
+					}
+					catch (Exception e){
+						usageError();
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * main function. Initialises and runs the program.
+	 */
+
 	public static void main(String[] args){
+
+		//ititialising utility and execution flags
 		elapsed = 0;
 
 		studentsJoined = 0;
@@ -168,36 +325,33 @@ public class Administrator {
 		profsJoined = 0;
 		profsLeft = 0;
 
+		saveName = "sav.txt";
+		days = -1;
+
+		noInputFile = true;
+		criticalDisplay = false;
+		waitTime = 500;
 		random = new Random();
 
-		if(args.length == 0){
-			fileInOut = new FileIO("", "sav.txt");
+		parseArgs(args);
+
+		//if no config file provided, run from empty simulation
+		if(noInputFile){
+			fileInOut = new FileIO("", saveName);
 			school = new School();
-			run(-1);
+			run(days);
+			report();
+			return;
 		}
 
-		fileInOut = new FileIO(args[0], "sav.txt");
+		//otherwise run with config
+		fileInOut = new FileIO(configName, saveName);
 		try{
 			school = fileInOut.recon();
 		} catch (IOException e) {
 			System.out.println("Something was wrong with the file.\nMake sure the path is correct!");
 			System.exit(-2);
 		}
-
-		if(args.length == 1){
-			run(-1);
-		}
-
-
-		Integer days = 0;
-		try{
-			days =Integer.parseInt(args[1]);
-		}
-		catch (Exception e){
-			System.out.println("Not a valid numer");
-			System.exit(1);
-		}
-
 		run(days);
 
 		report();

@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+/**
+ * School class
+ * Contains all the Subjects, Courses, Students
+ * and instructors and runs a single timestep on them
+ */
 public class School {
 	
 	String name;
@@ -22,6 +27,9 @@ public class School {
 		this.name = name;
 	}
 
+	/**
+	 * Overloaded adder function for each type of array
+	 */
 	void add(Subject subject){
 		subjects.add(subject);
 	}
@@ -38,7 +46,9 @@ public class School {
 		instructors.add(instructor);
 	}
 
-
+	/**
+	 * Overloaded remover function for each type of array
+	 */
 	void remove(Subject subject){
 		subjects.remove(subject);
 	}
@@ -55,7 +65,9 @@ public class School {
 		instructors.remove(instructor);
 	}
 
-
+	/**
+	 * Getter function for each type of array
+	 */
 	ArrayList<Subject> getSubjects(){
 		return subjects;
 	}
@@ -72,13 +84,15 @@ public class School {
 		return instructors;
 	}
 
-	/** @return */
+	/**
+	 * Return the name of the School class
+	 */
 	String getName(){
 		return name;
 	}
 
 	/**
-	 * @return
+	 * Generates a status report on all entries in all arrays
 	 */
 	public String toString(){
 		String status = new String();
@@ -105,13 +119,24 @@ public class School {
 		return status + "\n\n";
 	}
 
+	/**
+	 * Each day do the following actions...
+	 */
 	public void aDayInSchool(){
+
+		/**
+		 * Creates courses for each non open to registration
+		 * subject
+		 */
 		for(Subject subject : subjects){
 			if(!subject.checkAssign()){
 				courses.add(new Course(subject, 2));
 			}
 		}
 
+		/**
+		 * Assign Instructor to a course he can teach
+		 */
 		for(Course course : courses){
 			if(!course.hasInstructor()){
 				for(Instructor instructor : instructors){
@@ -122,10 +147,12 @@ public class School {
 			}
 		}
 
+		/**
+		 * Enroll free students to subjects they have never done
+		 */
 		for(Student student : students){
 			if(!student.isEnrolled()){
 				for(Course course : courses){
-					Integer id = course.getSubject().getID();
 					if(course.enrolStudent(student)){
 						break;
 					}
@@ -133,6 +160,9 @@ public class School {
 			}
 		}
 
+		/**
+		 * Mark and remove courses that are cancelled or done
+		 */
 		ArrayList<Course> forRemoval = new ArrayList<Course>();
 		for(Course course : courses){
 			course.aDayPasses();

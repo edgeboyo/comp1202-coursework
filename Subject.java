@@ -1,4 +1,7 @@
 
+/**
+ * Simple Subject class. No special logic to explain here
+ */
 public class Subject {
 	
 	Integer id;

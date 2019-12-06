@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+
+/**
+ * Simple Student
+ */
 public class Student extends Person {
 
 	ArrayList<Integer> certificates;

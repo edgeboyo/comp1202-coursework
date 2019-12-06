@@ -1,4 +1,7 @@
 
+/**
+ * Simple Teacher class. No special logic to explain here
+ */
 public class Teacher extends Instructor {
 	
 	Teacher(String name, char gender, Integer age){

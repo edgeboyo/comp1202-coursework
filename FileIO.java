@@ -1,9 +1,16 @@
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * File Input/Output used
+ * Reading config, saves and writing saves is implemented here
+ */
 public class FileIO {
 	String[] params = new String[2];
 
+	/**
+	 * Header used to recognise 
+	 */
 	final String header = "//HEADER OF SAVE FILE !!!DO NOT CHANGE THIS!!!\\\\";
 
 	FileIO(String input, String output){
@@ -11,6 +18,10 @@ public class FileIO {
 		params[1] = output;
 	}
 
+	/**
+	 * This function load a school from a saved file
+	 * Throws IOException when file is not up to standards
+	 */
 	School readSave() throws IOException{
 		School school = null;
 
@@ -23,6 +34,9 @@ public class FileIO {
 		while(next != null){
 			String[] parse = next.split(":");
 
+			if(parse == null){
+				break;
+			}
 			if(parse[0].equals("school")){
 				school = new School(parse[1]);
 			}
@@ -32,17 +46,19 @@ public class FileIO {
 				Integer specialism = Integer.parseInt(further[2]);
 				Integer duration = Integer.parseInt(further[3]);
 				boolean assigned = (Integer.parseInt(further[4]) == 1 ? true : false);
-
 				Subject sub = new Subject(id, specialism, duration, further[0]);
-				school.add(sub);
 				if(assigned)
 					sub.assign();
+				school.add(sub);
+
+				
 			}
 			else if(parse[0].equals("course")){
+ 				//System.out.println(next + " : " + school.getSubjects().get(0).toSave());
 				String[] further = parse[1].split(",");
 				Course course = null;
 				Subject sub = school.getSubjects().get(Integer.parseInt(further[0]));
-				course = new Course(sub, 100);
+				course = new Course(sub);
 				school.add(course);
 				course.timeSet(Integer.parseInt(further[1]), Integer.parseInt(further[2]));
 				toAdd.add(new ArrayList<Integer>());
@@ -52,6 +68,7 @@ public class FileIO {
 				}
 
 				further = parse[2].split(",");
+
 				if(further == null){
 					toAdd.get(toAdd.size()-1).add(Integer.parseInt(parse[2]));
 				}
@@ -60,9 +77,11 @@ public class FileIO {
 						toAdd.get(toAdd.size()-1).add(Integer.parseInt(further[i]));
 					}
 				}
+
 			}
 			else{
-				//System.out.println("PROBLEM IS: " + next); 
+				//System.out.println("PROBLEM IS: " + next);
+ 
 				String[] further = parse[1].split(",");
 				String name = further[0];
 				char gender = further[1].charAt(0);
@@ -76,7 +95,6 @@ public class FileIO {
 					if(enrolled){
 						stud.enrol();
 					}
-					System.out.println(next);
 					if(further.length == 3){
 						next = bufRead.readLine();
 						continue;
@@ -101,7 +119,6 @@ public class FileIO {
 				else if(parse[0].equals("OOTrainer")){
 					inst = new OOTrainer(person);
 				}
-				System.out.println(next);
 				if(Integer.parseInt(parse[2]) != -1)
 					school.getCourses().get(Integer.parseInt(parse[2])).setInstructor(inst);
 
@@ -116,9 +133,14 @@ public class FileIO {
 			i++;
 		}
 
+
 		return school;
 	}
 
+	/**
+	 * This function load a school from a config file
+	 * Throws IOException when file is not up to standards
+	 */
 	School readConfig() throws IOException{
 		School school = null;
 
@@ -168,6 +190,10 @@ public class FileIO {
 		return school;
 	}
 
+	/**
+	 * Recognises if file is save or config from the header
+	 * Throws IOException when file is not up to standards
+	 */
 	School recon() throws IOException{
 		BufferedReader bufRead = new BufferedReader(new FileReader(params[0]));
 
@@ -183,6 +209,9 @@ public class FileIO {
 		return readConfig();
 	}
 
+	/**
+	 * Function that creates a save based on a school Class
+	 */
 	void buildSave(School school) throws IOException{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(params[1]));
 		writer.write(header + "\n");
