@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 public class FileIO {
 	String[] params = new String[2];
@@ -17,6 +18,8 @@ public class FileIO {
 
 		String next = bufRead.readLine();
 		next = bufRead.readLine();
+
+		ArrayList<ArrayList<Integer> > toAdd = new ArrayList<ArrayList<Integer> >();
 		while(next != null){
 			String[] parse = next.split(":");
 
@@ -28,8 +31,35 @@ public class FileIO {
 				Integer id = Integer.parseInt(further[1]);
 				Integer specialism = Integer.parseInt(further[2]);
 				Integer duration = Integer.parseInt(further[3]);
+				boolean assigned = (Integer.parseInt(further[4]) == 1 ? true : false);
 
-				school.add(new Subject(id, specialism, duration, further[0]));
+				Subject sub = new Subject(id, specialism, duration, further[0]);
+				school.add(sub);
+				if(assigned)
+					sub.assign();
+			}
+			else if(parse[0].equals("course")){
+				String[] further = parse[1].split(",");
+				Course course = null;
+				Subject sub = school.getSubjects().get(Integer.parseInt(further[0]));
+				course = new Course(sub, 100);
+				school.add(course);
+				course.timeSet(Integer.parseInt(further[1]), Integer.parseInt(further[2]));
+				toAdd.add(new ArrayList<Integer>());
+				if(parse.length==2){
+					next = bufRead.readLine();
+					continue;
+				}
+
+				further = parse[2].split(",");
+				if(further == null){
+					toAdd.get(toAdd.size()-1).add(Integer.parseInt(parse[2]));
+				}
+				else{
+					for(int i=0; i<further.length; i++){
+						toAdd.get(toAdd.size()-1).add(Integer.parseInt(further[i]));
+					}
+				}
 			}
 			else{
 				//System.out.println("PROBLEM IS: " + next); 
@@ -46,10 +76,13 @@ public class FileIO {
 					if(enrolled){
 						stud.enrol();
 					}
-					further = parse[3].split(",");
-					if(further == null){
+					System.out.println(next);
+					if(further.length == 3){
+						next = bufRead.readLine();
 						continue;
 					}
+					further = parse[3].split(",");
+					
 					for(int i = 0; i < further.length; i++){
 						stud.getCertificates().add(Integer.parseInt(further[i]));
 					}
@@ -68,10 +101,20 @@ public class FileIO {
 				else if(parse[0].equals("OOTrainer")){
 					inst = new OOTrainer(person);
 				}
+				System.out.println(next);
+				if(Integer.parseInt(parse[2]) != -1)
+					school.getCourses().get(Integer.parseInt(parse[2])).setInstructor(inst);
+
 			}
 			next = bufRead.readLine();
 		}
-
+		int i = 0;
+		for(ArrayList<Integer> list : toAdd){
+			for(Integer id : list){
+				school.getCourses().get(i).enrolStudent(school.getStudents().get(id));
+			}
+			i++;
+		}
 
 		return school;
 	}

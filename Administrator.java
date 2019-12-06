@@ -178,7 +178,7 @@ public class Administrator {
 
 		fileInOut = new FileIO(args[0], "sav.txt");
 		try{
-			school = fileInOut.readConfig();
+			school = fileInOut.recon();
 		} catch (IOException e) {
 			System.out.println("Something was wrong with the file.\nMake sure the path is correct!");
 			System.exit(-2);

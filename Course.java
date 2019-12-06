@@ -106,6 +106,11 @@ public class Course {
 		return false;
 	}
 
+	void timeSet(Integer timeOpen, Integer timeWork){
+		daysUntilStarts = timeOpen;
+		daysToRun = timeWork;
+	}
+
 	public String toString(){
 		String temp = new String();
 
@@ -130,11 +135,6 @@ public class Course {
 		temp += "course:";
 
 		temp += school.getSubjects().indexOf(subject) + "," + daysUntilStarts + "," + daysToRun + ",";
-
-		if(instructor == null)
-			temp += -1;
-		else
-			temp += school.getInstructors().indexOf(instructor);
 
 		temp+=":";
 

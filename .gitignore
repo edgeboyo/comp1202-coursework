@@ -3,3 +3,4 @@
 *.class
 Test*
 *.txt
+!readme.txt
