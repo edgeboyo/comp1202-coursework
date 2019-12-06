@@ -5,6 +5,10 @@ public class OOTrainer extends Teacher {
 		super(name, gender, age);
 	}
 
+	OOTrainer(Person person){
+		this(person.getName(), person.getGender(), person.getAge());
+	}
+
 	boolean canTeach(Subject subject){
 		if(subject.getSpecialism() == 3 || super.canTeach(subject)){
 			return true;

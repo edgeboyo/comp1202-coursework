@@ -10,6 +10,10 @@ public class Student extends Person {
 		certificates = new ArrayList<Integer>();
 	}
 
+	Student(Person person){
+		this(person.getName(), person.getGender(), person.getAge());
+	}
+	
 	void graduate(Subject subject){
 		certificates.add(subject.getID());
 		enrolled = false;
@@ -35,6 +39,12 @@ public class Student extends Person {
 		return enrolled;
 	}
 
+	boolean completedAll(School school){
+		if(certificates.size() == school.getSubjects().size()){
+			return true;
+		}
+		return false;
+	}
 	public String toString() {
 		String temp = super.toString();
 

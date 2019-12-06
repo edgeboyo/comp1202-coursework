@@ -2,16 +2,24 @@ import java.util.ArrayList;
 
 public class School {
 	
+	String name;
+
 	ArrayList<Subject> subjects;
 	ArrayList<Course> courses;
 	ArrayList<Student> students;
 	ArrayList<Instructor> instructors;
 
 	School(){
+		name = "PLACEHOLDER HIGH";
 		subjects = new ArrayList<Subject>();
 		courses = new ArrayList<Course>();
 		students = new ArrayList<Student>();
 		instructors = new ArrayList<Instructor>();
+	}
+
+	School(String name){
+		this();
+		this.name = name;
 	}
 
 	void add(Subject subject){
@@ -67,27 +75,27 @@ public class School {
 	public String toString(){
 		String status = new String();
 		String divider = new String(" ************");
-		status += "----SUBJECTS----\n";
+		status += "-SUBJECTS\n";
 
-		
+
 		for(Subject subject : subjects){
 			status += subject + divider + "\n";
 		}
 
 
-		status += "\n----COURSES----\n";
+		status += "\n-COURSES\n";
 		for(Course course : courses){
 			status += course + divider + "\n";
 		}
 
 
-		status += "\n----STUDENTS----\n";
+		status += "\n-STUDENTS\n";
 		for(Student student : students){
 			status += student + divider + "\n";
 		}
 
 
-		status += "\n----INSTRUCTORS----\n";
+		status += "\n-INSTRUCTORS\n";
 		for(Instructor instructor : instructors){
 			status += instructor + divider + "\n";
 		}
